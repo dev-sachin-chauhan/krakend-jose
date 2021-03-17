@@ -12,7 +12,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"github.com/dev-sachin-chauhan/kraken-jose/secrets"
+	"github.com/dev-sachin-chauhan/krakend-jose/secrets"
 )
 
 func TestJWK(t *testing.T) {

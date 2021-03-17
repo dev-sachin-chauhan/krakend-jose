@@ -1,4 +1,4 @@
-module github.com/dev-sachin-chauhan/kraken-jose
+module github.com/dev-sachin-chauhan/krakend-jose
 
 go 1.13
 
