@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	krakendjose "github.com/devopsfaith/krakend-jose"
+	krakendjose "github.com/dev-sachin-chauhan/kraken-jose"
 	"github.com/devopsfaith/krakend/config"
 	"github.com/devopsfaith/krakend/logging"
 	"github.com/devopsfaith/krakend/proxy"
