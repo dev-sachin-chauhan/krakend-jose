@@ -118,7 +118,21 @@ func TokenSignatureValidator(hf ginkrakend.HandlerFactory, logger logging.Logger
 		return func(c *gin.Context) {
 			token, err := validator.ValidateRequest(c.Request)
 			if err != nil {
-				c.AbortWithError(http.StatusUnauthorized, err)
+				c.Error(err)
+				if strings.Contains(err.Error(), "(exp)") {
+					c.AbortWithStatusJSON(401, gin.H{
+						"statusCode": 600,
+						"message": "Token Expired",
+						"iec": "com_middle_gate_1",
+					  })
+					return
+				}
+				c.AbortWithStatusJSON(401, gin.H{
+					"statusCode": 601,
+					"message": "Invalid Token",
+					"iec": "com_middle_gate_3",
+				  })
+				//c.AbortWithError(http.StatusUnauthorized, err)
 				return
 			}
 
