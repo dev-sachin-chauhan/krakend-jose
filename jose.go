@@ -219,7 +219,7 @@ func ScopesAnyMatcher(scopesKey string, claims map[string]interface{}, requiredS
 
 func SignFields(keys []string, signer Signer, response *proxy.Response) error {
 	for _, key := range keys {
-		tmp, ok := response.Data[key]
+		tmp, ok := response.Data["data"]
 		if !ok {
 			continue
 		}
@@ -227,11 +227,20 @@ func SignFields(keys []string, signer Signer, response *proxy.Response) error {
 		if !ok {
 			continue
 		}
-		token, err := signer(data)
+		nestedTmp, ok := data[key]
+		if !ok {
+			continue
+		}
+		nestedData, ok := nestedTmp.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		token, err := signer(nestedData)
 		if err != nil {
 			return err
 		}
-		response.Data[key] = token
+		data[key] = token
+		response.Data["data"] = data
 	}
 	return nil
 }
