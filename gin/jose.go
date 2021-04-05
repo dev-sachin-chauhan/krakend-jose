@@ -116,6 +116,17 @@ func TokenSignatureValidator(hf ginkrakend.HandlerFactory, logger logging.Logger
 		paramExtractor := extractRequiredJWTClaims(cfg)
 
 		return func(c *gin.Context) {
+			tokenString := extractToken(c.Request)
+			tokenObject, err := jwt.ParseSigned(tokenString)
+			if  err != nil || tokenObject.Headers[0].KeyID == "" {
+				c.AbortWithStatusJSON(401, gin.H{
+					"statusCode": 600,
+					"message": "Token Expired",
+					"iec": "gateway_middle_gate_0",
+				  })
+				return
+			}
+
 			token, err := validator.ValidateRequest(c.Request)
 			if err != nil {
 				c.Error(err)
@@ -123,14 +134,14 @@ func TokenSignatureValidator(hf ginkrakend.HandlerFactory, logger logging.Logger
 					c.AbortWithStatusJSON(401, gin.H{
 						"statusCode": 600,
 						"message": "Token Expired",
-						"iec": "com_middle_gate_1",
+						"iec": "gateway_middle_gate_1",
 					  })
 					return
 				}
 				c.AbortWithStatusJSON(401, gin.H{
 					"statusCode": 601,
 					"message": "Invalid Token",
-					"iec": "com_middle_gate_3",
+					"iec": "gateway_middle_gate_2",
 				  })
 				//c.AbortWithError(http.StatusUnauthorized, err)
 				return
@@ -165,6 +176,15 @@ func TokenSignatureValidator(hf ginkrakend.HandlerFactory, logger logging.Logger
 			handler(c)
 		}
 	}
+}
+
+func extractToken(r *http.Request) string {
+	bearToken := r.Header.Get("Authorization")
+	strArr := strings.Split(bearToken, " ")
+	if len(strArr) == 2 {
+	   return strArr[1]
+	}
+	return ""
 }
 
 func propagateHeaders(cfg *config.EndpointConfig, propagationCfg [][]string, claims map[string]interface{}, c *gin.Context, logger logging.Logger) {
